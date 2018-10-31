@@ -15,7 +15,7 @@ to program:
 
 <img src="pynq.png" width="500"></img>
 
-I used these buttons are a gamepad http://www.xess.com/shop/product/stickit-buttons/
+I used these buttons as a gamepad http://www.xess.com/shop/product/stickit-buttons/
 
 ```
 Copyright IBM Corp. 2018
