@@ -13,7 +13,9 @@ to program:
   make prog_01
 ```
 
-<img src="pynq" width="500"></img>
+<img src="pynq.png" width="500"></img>
+
+I used these buttons are a gamepad http://www.xess.com/shop/product/stickit-buttons/
 
 ```
 Copyright IBM Corp. 2018
