@@ -5,7 +5,7 @@ The top module is tailored to Xilinx PYNQ-Z1 board.
 
 to build:
 ```
-  make gb_11
+  make gb_01
 ```
 to program:
 
