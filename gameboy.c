@@ -60,8 +60,7 @@ void di()    { disable_int=1;  };
 void halt()  { halted=1;  };
 void stop()  { stopped=1; PC++; };
 
-// load/store
-// mem access, todo: MMU
+// 8-bit load/store
 u8 r8(u16 a) {
   switch (a & 0xf000) {
     case 0x0000 ... 0x3000: // ROM bank 0 : 0x0000 - 0x3fff
@@ -116,6 +115,7 @@ void w8(u16 a, u8 v) {
   }
 }
 
+//16-bit load/store
 void w16(u16 a, u16 v) { w8(a,v&0xff); w8(a+1,v>>8); } // write 2 bytes
 u16  r16(u16 a) { return ((u16)(r8(a+1)) << 8) | (u16)(r8(a)); } // read 2 bytes
 
@@ -123,6 +123,7 @@ u16  r16(u16 a) { return ((u16)(r8(a+1)) << 8) | (u16)(r8(a)); } // read 2 bytes
 u8 f8()   { u8 r = r8(PC); PC+=1; return r;  } // fetch operand data (byte)
 u16 f16() { u16 r = r16(PC); PC+=2; return r; } // fetch operand data (2 bytes)
 
+//16-bit stack push/pop
 void push16(u16 v) { SP -= 2; w16(SP, v); } // push onto the stack
 u16 pop16() { u16 v = r16(SP); SP+=2; return v; } // pop
 
@@ -198,6 +199,7 @@ u16 add16sp(s8 v) {
   fC = ((SP & 0x00ff) + (((u16)((s16)v)) & 0x00ff) > 0x00ff); //?
   return SP + v;
 }
+
 // jumps
 void jr()  { PC += (s8)(f8()); } // jump relative
 void jp()  { PC = r16(PC); } // jump absolute
@@ -356,8 +358,7 @@ void x31() { SP = r16(PC); PC+=2; }
 void x08() { u16 a = r16(PC); w16(a, SP); PC+=2; } // LD (a16), SP
 void xf9() { SP = HL; }
 
-///////////////
-
+// 8-bit alu subgroup
 void alu() {
   u8 src_idx = op & 0x7; //last 3 bits are reg#
   u8 src = (((op >> 6) & 0x3) == 3) ? f8() : src_idx == 6 ? r8(HL) : *(ptrs[src_idx]);
@@ -388,7 +389,7 @@ void x27() { daa(); }
 void x37() { scf(); }
 void x2f() { cpl(); }
 void x3f() { ccf(); }
-///////////////////////
+
 // 16-bit alu
 // inc 16
 void x03() { BC++; }
@@ -496,14 +497,10 @@ void ops_init() {
     ops[0xe6]=&alu; ops[0xee]=&alu;
     ops[0xf6]=&alu; ops[0xfe]=&alu;
 
-    ops[0x04]=&incdec; ops[0x05]=&incdec;
-    ops[0x0c]=&incdec; ops[0x0d]=&incdec;
-    ops[0x14]=&incdec; ops[0x15]=&incdec;
-    ops[0x1c]=&incdec; ops[0x1d]=&incdec;
-    ops[0x24]=&incdec; ops[0x25]=&incdec;
-    ops[0x2c]=&incdec; ops[0x2d]=&incdec;
-    ops[0x34]=&incdec; ops[0x35]=&incdec;
-    ops[0x3c]=&incdec; ops[0x3d]=&incdec;
+    ops[0x04]=&incdec; ops[0x05]=&incdec; ops[0x0c]=&incdec; ops[0x0d]=&incdec;
+    ops[0x14]=&incdec; ops[0x15]=&incdec; ops[0x1c]=&incdec; ops[0x1d]=&incdec;
+    ops[0x24]=&incdec; ops[0x25]=&incdec; ops[0x2c]=&incdec; ops[0x2d]=&incdec;
+    ops[0x34]=&incdec; ops[0x35]=&incdec; ops[0x3c]=&incdec; ops[0x3d]=&incdec;
 
     // misc alu
     ops[0x27]=&x27; // daa
@@ -764,12 +761,9 @@ u32 frame_no = 0;
 u8 buffer=0;
 u8 new_frame=0;
 
-void blit() {
-  buffer ^= 1;
-  new_frame = 1;
-  frame_no++;
-}
+void blit() { buffer ^= 1; new_frame = 1; frame_no++; }
 
+// framebuffer access pointer
 u8* get_screen() { return pix[buffer]; }
 
 void gpu_step() {
