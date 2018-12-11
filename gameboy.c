@@ -875,7 +875,7 @@ static void step() {
   if (key_reset == 1) { reset(); key_reset = 0; }
 
   cpu_step(1);
-  if (limit_speed) {counter++; u8 interv = key_turbo ? 20 : 3; if (counter == interv) { counter = 0; usleep(1); }}
+  if (limit_speed) {counter++; u8 interv = key_turbo ? 80 : 20; if (counter == interv) { counter = 0; usleep(1); }}
   gpu_step();
   total_cpu_ticks += cpu_ticks;
   total_gpu_ticks += gpu_ticks;
@@ -884,9 +884,15 @@ static void step() {
 }
 
 void next_frame() {
-  while (!new_frame)
-    step();
+  while (!new_frame) step();
   new_frame=0;
+}
+
+void next_frame_skip(u8 skip) {
+  for (u8 i=0; i<skip; i++) {
+    while (!new_frame) step();
+    new_frame=0;
+  }
 }
 
 void read_cart(const char* fname) {
@@ -914,11 +920,12 @@ void dump_state(const char* fname) {
 
 void restore_state(const char* fname) {
   FILE *fp = fopen(fname, "rb");
-  fread(g.regs, 2, 6, fp);
-  fread(ram, 1, 0x2000, fp);
-  fread(vram, 1, 0x2000, fp);
-  fread(oam, 1, 0x100, fp);
-  fread(hram, 1, 0x100, fp);
+  int status;
+  status=fread(g.regs, 2, 6, fp);
+  status=fread(ram, 1, 0x2000, fp);
+  status=fread(vram, 1, 0x2000, fp);
+  status=fread(oam, 1, 0x100, fp);
+  status=fread(hram, 1, 0x100, fp);
   fclose(fp);
 }
 

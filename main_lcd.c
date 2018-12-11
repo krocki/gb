@@ -28,9 +28,11 @@ u8 vsync=0;
 static GLFWwindow* window;
 static void error_callback(s32 error, const char* description) { }
 static void key_callback(GLFWwindow* window, s32 key, s32 scancode, s32 action, s32 mods) {
+
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, GLFW_TRUE);
     if (action == GLFW_PRESS && key == GLFW_KEY_0) gl_debug ^= 1;
     if (action == GLFW_PRESS && key == GLFW_KEY_9) limit_speed ^= 1;
+
     bind_key(GLFW_KEY_LEFT_SHIFT, key_turbo);
     bind_key(GLFW_KEY_1,     key_save_state);
     bind_key(GLFW_KEY_2,     key_load_state);
@@ -62,6 +64,8 @@ static GLFWwindow* open_window(const char* title, GLFWwindow* share, s32 posX, s
 
     return window;
 }
+
+// TODO: change to texture... but it's problematic if tex size != [2^n] x [2^n]
 static void draw_quad()
 {
     s32 width, height;
@@ -174,15 +178,12 @@ void *gameboy(void *args) {
   gb_reset();
   printf("%9.3f, DONE\n", get_time()-t0);
 
-  for (u8 i=0; i <128; i++) {
-    prev[i] = 0; hits[i] = 0;
-  }
-
   while (gl_ok) {
-    if (gl_debug) { diff_mem(0xff80, 128); }
+    if (gl_debug) { }
     next_frame();
     if (serial) check_stdout();
   }
+
   printf("%9.6f, terminating\n", get_time()-t0);
   printf("ticks %d, time %.6f s, MHz %.3f\n", total_cpu_ticks, get_time()-cpu_ts, ((double)total_cpu_ticks/(1000000.0*(get_time()-cpu_ts))));
 

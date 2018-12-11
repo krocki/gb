@@ -32,8 +32,7 @@ typedef struct {
     u16 regs[6];
   };
   // extra registers for handling register transfers
-  u8 src_reg;
-  u8 dst_reg;
+  u8 src_reg; u8 dst_reg;
 } gb;
 
 gb g;
@@ -154,5 +153,6 @@ extern void set_keys(u8 k);
 extern void dump_state(const char* fname);
 extern void restore_state(const char* fname);
 
-extern void next_frame();
+extern void next_frame(); // go to next frame
+extern void next_frame_skip(u8); // go to nth frame forward (skip n-1)
 extern void print_mem(u16,u16);
