@@ -26,21 +26,18 @@ time: 00h 03m 30s, frames 0.42M
 time: 00h 04m 00s, frames 0.48M
 ```
 
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+GIFS generated every 30s:
 ![alt_text](gifs/Micro_Machines_(USA,_Europe).gb_63216.gif  "Micro machines")
 ![alt_text](gifs/Micro_Machines_(USA,_Europe).gb_124856.gif "Micro machines")
 ![alt_text](gifs/Micro_Machines_(USA,_Europe).gb_184680.gif "Micro machines")
 ![alt_text](gifs/Micro_Machines_(USA,_Europe).gb_244488.gif "Micro machines")
 ![alt_text](gifs/Micro_Machines_(USA,_Europe).gb_304912.gif "Micro machines")
-![alt_text](gifs/Micro_Machines_(USA,_Europe).gb_364336.gif "Micro machines")
-![alt_text](gifs/Micro_Machines_(USA,_Europe).gb_423184.gif "Micro machines")
-![alt_text](gifs/Micro_Machines_(USA,_Europe).gb_484080.gif "Micro machines")
 
 2. Generate lots of frames and save them to gif and npy files:
 `python make_gifs.py --rom {PATH_TO_ROM}`
 
 For example, running the command `python make_gifs.py --rom ./wario_walking.gb` will result in a file like this:
-[img]/gifs/wario_walking.gif[/img]
+![alt_text](/gifs/wario_walking.gif "Wario Walking")
 
 
 3. Alternatively, build a standalone gameboy with GLFW support and play games manually
