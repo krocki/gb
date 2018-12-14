@@ -3,11 +3,16 @@
 # Quick start
 1. Build C lib
 `make gameboy.so`
-2. run the front end from python:
+2. Run the front end from python:
 `python gameboy.py --rom {PATH_TO_ROM}`
 
+## C dependencies
+None
+## Python dependencies
+Numpy, CFFI
+
 # Usage
-1. Use the provided python wrapper. Example:
+#### Use the provided python wrapper. Example:
 * Run the environment for 0.5M steps
 * Produce a 50 frame-long gif every 30s
 ```
@@ -33,14 +38,14 @@ time: 00h 04m 00s, frames 0.48M
 ![alt_text](gifs/Micro_Machines_(USA,_Europe).gb_244488.gif "Micro machines")
 ![alt_text](gifs/Micro_Machines_(USA,_Europe).gb_304912.gif "Micro machines")
 
-2. Generate lots of frames and save them to gif and npy files:
+#### Generate lots of frames and save them to gif and npy files:
 `python make_gifs.py --rom {PATH_TO_ROM}`
 
 For example, running the command `python make_gifs.py --rom ./wario_walking.gb` will result in a file like this:
 ![alt_text](/gifs/wario_walking.gif "Wario Walking")
 
 
-3. Alternatively, build a standalone gameboy with GLFW support and play games manually
+#### Alternatively, build a standalone gameboy with GLFW support and play games manually
 *. `make`
 *. `./gameboy {PATH_TO_ROM}`
 
