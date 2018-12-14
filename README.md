@@ -7,7 +7,9 @@
 `python gameboy.py --rom {PATH_TO_ROM}`
 
 # Usage
-* Option 1: use the provided python wrapper, i.e. run the envoronment for 0.5M steps, produce a 50 frame-long gif every 30s:
+1. Use the provided python wrapper. Example:
+* Run the envoronment for 0.5M steps
+* Produce a 50 frame-long gif every 30s
 `python gameboy.py --rom ./gb_roms/Micro_Machines_\(USA\,_Europe\).gb --framelimit=500000 --write_gif_every 30 --write_gif_duration 50`
 
 Output:
@@ -31,16 +33,16 @@ time: 00h 04m 00s, frames 0.48M
 [img]gifs/Micro_Machines_(USA,_Europe).gb_423184.gif[/img]
 [img]gifs/Micro_Machines_(USA,_Europe).gb_484080.gif[/img]
 
-* Generate lots of frames and save them to gif and npy files:
+2. Generate lots of frames and save them to gif and npy files:
 `python make_gifs.py --rom {PATH_TO_ROM}`
 
 For example, running the command `python make_gifs.py --rom ./wario_walking.gb` will result in a file like this:
 [img]/gifs/wario_walking.gif[/img]
 
 
-* Alternatively, build a standalone gameboy with GLFW support and play games manually
-1. `make`
-2. `./gameboy {PATH_TO_ROM}`
+3. Alternatively, build a standalone gameboy with GLFW support and play games manually
+*. `make`
+*. `./gameboy {PATH_TO_ROM}`
 
 ```
 enter - START
