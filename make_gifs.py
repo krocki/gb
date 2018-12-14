@@ -5,32 +5,32 @@ from scipy.misc import imresize
 import random
 import numpy as np
 
-# init GB subsystem
 def init(rom_path):
-  _gb = ffi.dlopen("./gameboy.so"); _gb.read_cart(rom_path)
+  _gb = ffi.dlopen("./gameboy.so")
+  _gb.read_cart(rom_path);
   _frame = ffi.buffer(_gb.get_screen(), 160*144*3)
-  _gb.reset(); _gb.limit_speed=0
+
+  _gb.reset()
+  _gb.limit_speed=0
   return _frame,_gb
 
-# get pointer to the framebuffer and convert it to numpy array
-def get_frame(_frame): return np.frombuffer(_frame, dtype=np.uint8).reshape(144,160,3)[:,:,:]
+def get_frame(_frame):
+    #return imresize(np.frombuffer(_frame, dtype=np.uint8).reshape(144,160,3)[:,:,:], (160,160))
+    return np.frombuffer(_frame, dtype=np.uint8).reshape(144,160,3)[:,:,:]
 
-# parse commandline args
 def get_args():
     parser = argparse.ArgumentParser(description=None)
     parser.add_argument('--processes', default=1, type=int, help='number of processes to train with')
     parser.add_argument('--framelimit', default=10000, type=int, help='frame limit')
     parser.add_argument('--skipframes', default=8, type=int, help='frame increment, def=1')
+    parser.add_argument('--gifwritefreq', default=30, type=int, help='write every nth frame to gif')
     parser.add_argument('--rom', default='./wario_walking.gb', type=str, help='path to rom')
-    parser.add_argument('--write_gif_every', default=60, type=int, help='write to gif every n secs')
-    parser.add_argument('--write_gif_duration', default=50, type=int, help='number of frames to write')
     return parser.parse_args()
 
 if __name__ == "__main__":
 
     ffi = FFI()
 
-    #C header stuff
     ffi.cdef("""
     typedef uint8_t u8; typedef uint16_t u16; typedef uint32_t u32;
     void read_cart(const char* romname);
@@ -46,9 +46,10 @@ if __name__ == "__main__":
     u8 limit_speed;
     u32 unimpl;
     """)
-
     args = get_args()
     imgs,frames,episodes=[],0,0
+    write_frame = args.gifwritefreq
+    start_time = last_disp_time = time.time()
 
     path_bytes = args.rom.encode('utf-8')
     logname = args.rom + '.txt'
@@ -76,40 +77,36 @@ if __name__ == "__main__":
       0x88  #b + up
     ]
 
-    t0 = last_time = time.time()
-    imgs, frames_to_write = [], 0
+    t0 = time.time()
 
-    # main loop
     while True:
-
       # process a frame
       raw_frame=get_frame(frame)
 
-      # checkpoint?
-      if (time.time() - last_time) > args.write_gif_every:
-        elapsed = time.strftime("%Hh %Mm %Ss", time.gmtime(time.time() - t0))
-        print('time: {}, frames {:.2f}M'.format(elapsed, frames/1e6))
-        frames_to_write = args.write_gif_duration;
-        last_time = time.time()
-
-      # write frames
-      if frames_to_write > 0:
-          fr=np.array(raw_frame)
-          imgs.append(np.rot90(np.fliplr(fr)))
-          frames_to_write -= 1
-
       # write to gif?
-      if len(imgs) == args.write_gif_duration:
-        write_gif(imgs, '{}_{}.gif'.format(args.rom, frames),fps=10)
-        imgs=[]
+      if (write_frame <= 0):
+        fr=np.array(raw_frame)
+        imgs.append(np.rot90(np.fliplr(fr)))
+        write_frame = args.gifwritefreq
+      else:
+        write_frame -= args.skipframes
 
       # decide on the action
       a = random.randint(0,len(actions_hex)-1)
       gb.set_keys(actions_hex[a])
       gb.next_frame_skip(args.skipframes)
+      frames += args.skipframes
 
       # terminate?
       if frames > args.framelimit:
+        elapsed = time.strftime("%Hh %Mm %Ss", time.gmtime(time.time() - start_time))
+        print(gb.unimpl, args.rom, elapsed, frames, frames // (time.time() - t0))
+        last_disp_time = time.time()
+        if gb.unimpl == 0 and len(imgs) > 0:
+            write_gif(imgs, '{}.gif'.format(args.rom, frames),fps=10)
+            n = np.squeeze(np.stack(imgs)[:,1,:,:])
+            np.save('{}'.format(args.rom), n)
+        imgs=[]
         break
 
-      frames += args.skipframes
+

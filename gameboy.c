@@ -3,6 +3,9 @@
 #include "gameboy.h"
 
 u8 BOOTROM = 0; // use bootrom?
+u8 renderscan = 1; // enable or disable rendering
+extern u8 debug_name[0x100];
+u32 unimpl=0; // err_counter
 
 double get_time() {
   struct timeval tv; gettimeofday(&tv, NULL);
@@ -53,12 +56,20 @@ u8 mbc_mode = 0;
 u8 enable_int = 0;
 u8 disable_int = 0;
 
-void not()   { printf("%2x unimplemented\n", op); }
+void not()   { /*printf("%s, %2x unimplemented\n", debug_name, op); */ unimpl+=1; }
 void nop()   { /* nop */  };
 void ei()    { enable_int=1; };
 void di()    { disable_int=1;  };
 void halt()  { halted=1;  };
 void stop()  { stopped=1; PC++; };
+
+void oam_ram() { // OAM 'dma' transfer
+  if (REG_OAMDMA>0) {
+    u16 a = (u16)(REG_OAMDMA) << 8;
+    for (u8 i=0; i<160; i++) { u8 v=r8(a+i); w8(0xfe00+i,v); } // oam mem space
+    REG_OAMDMA = 0;
+  }
+}
 
 // 8-bit load/store
 u8 r8(u16 a) {
@@ -111,7 +122,10 @@ void w8(u16 a, u8 v) {
     case 0xc000 ... 0xf000:
       if (a < 0xfe00) ram[a & 0x1fff] = v; else
       if (a < 0xff00) oam[a & 0xff] = v;
-      else hram[a & 0xff] = v; break;
+      else {
+        hram[a & 0xff] = v;
+        if (a == 0xff46) { oam_ram(); }
+      } break;
   }
 }
 
@@ -559,6 +573,7 @@ void ops_init() {
 }
 
 void reset() {
+  unimpl=0;
   ops_init();
   total_cpu_ticks=0;
   cpu_ts = get_time();
@@ -629,8 +644,7 @@ void gpu_draw_bg() {
       } else {};
 
       u8 _tilenr = r8(tilemapbase + tiley * 32 + tilex);
-      u16 tilenr;
-      u16 tileaddress;
+      u16 tilenr, tileaddress;
       if (tilebase == 0x8800) {
         int8_t nr_s = (s8)_tilenr; s16 nr_s16 = (s16)nr_s + 128; tilenr = (u16)nr_s16;
       }
@@ -644,7 +658,7 @@ void gpu_draw_bg() {
       u8 color1_idx = ((data1 >> (7-pixelx)) & 0x1);
       u8 color_idx = color0_idx + color1_idx*2;
       u8 r,g,b; u8 color = (REG_BGRDPAL>>(color_idx*2))&0x3;
-      bgprio[x] = color;
+      bgprio[x] = color_idx;
       if (color == 0) {r=255; g=255; b=255;}
       if (color == 1) {r=192; g=192; b=192;}
       if (color == 2) {r=96; g=96; b=96;}
@@ -722,14 +736,6 @@ void gpu_renderscan() {
   gpu_draw_sprites();
 }
 
-void oam_ram() { // OAM 'dma' transfer
-  if (REG_OAMDMA>0) {
-    u16 a = (u16)(REG_OAMDMA) << 8;
-    for (u8 i=0; i<160; i++) { u8 v=r8(a+i); w8(0xfe00+i,v); } // oam mem space 
-    REG_OAMDMA = 0;
-  }
-}
-
 //mode = 0, 00, display ram can be accessed. cpu ok
 //       1, 01 vblank, cpu access ok
 //       2, 10 during oam-ram, cpu not ok
@@ -744,9 +750,9 @@ void gpu_change_mode(u8 new_mode) {
   u8 m1e = (REG_LCDSTAT >> 4) & 0x1; //vblank int
   u8 m2e = (REG_LCDSTAT >> 5) & 0x1; //oam int
   switch (gpu_mode) {
-    case 0: irq &= m0e; gpu_renderscan(); gpu_hblanking = 1; break;
+    case 0: irq &= m0e; if (renderscan) gpu_renderscan(); gpu_hblanking = 1; break;
     case 1: irq &= m1e; REG_INTF |= 0x01; break;
-    case 2: irq &= m2e; oam_ram(); break;
+    case 2: irq &= m2e; /*oam_ram();*/ break;
     case 3: irq = 0; break;
   }
   if (irq) REG_INTF |= 0x2;
@@ -869,7 +875,7 @@ static void step() {
   if (key_reset == 1) { reset(); key_reset = 0; }
 
   cpu_step(1);
-  if (limit_speed) {counter++; u8 interv = key_turbo ? 80 : 20; if (counter == interv) { counter = 0; usleep(1); }}
+  if (limit_speed) {counter++; u8 interv = key_turbo ? 20 : 4; if (counter == interv) { counter = 0; usleep(1); }}
   gpu_step();
   total_cpu_ticks += cpu_ticks;
   total_gpu_ticks += gpu_ticks;
@@ -883,9 +889,10 @@ void next_frame() {
 }
 
 void next_frame_skip(u8 skip) {
+  renderscan=0;
   for (u8 i=0; i<skip; i++) {
-    while (!new_frame) step();
-    new_frame=0;
+    if (i==(skip-1)) renderscan=1; // render only the last frame needed
+    while (!new_frame) step(); new_frame=0;
   }
 }
 
@@ -897,6 +904,7 @@ void read_cart(const char* fname) {
   fclose(file);
   file = fopen(fname, "r+");
   int bytes_read = fread(cart, sizeof(u8), size, file);
+  sprintf(debug_name, "%s", fname);
   fclose(file);
 }
 

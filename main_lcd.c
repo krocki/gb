@@ -32,6 +32,7 @@ static void key_callback(GLFWwindow* window, s32 key, s32 scancode, s32 action, 
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, GLFW_TRUE);
     if (action == GLFW_PRESS && key == GLFW_KEY_0) gl_debug ^= 1;
     if (action == GLFW_PRESS && key == GLFW_KEY_9) limit_speed ^= 1;
+    if (action == GLFW_PRESS && key == GLFW_KEY_8) renderscan ^= 1;
 
     bind_key(GLFW_KEY_LEFT_SHIFT, key_turbo);
     bind_key(GLFW_KEY_1,     key_save_state);

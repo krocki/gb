@@ -7,9 +7,13 @@ extern double get_time();
 #define GBC 0
 //skip bootrom
 extern u8 BOOTROM;
+extern u8 renderscan;
+extern u32 unimpl; // err counter
+
 // CPU freq
 #define FCLK 4194304
 
+u8 debug_name[0x100];
 u8 ram[0x2000];
 u8 rom[0x100];
 u8 vram[0x2000];
