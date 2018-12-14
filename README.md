@@ -26,7 +26,7 @@ time: 00h 03m 30s, frames 0.42M
 time: 00h 04m 00s, frames 0.48M
 ```
 
-GIFS generated every 30s:
+### GIFS generated every 30s:
 ![alt_text](gifs/Micro_Machines_(USA,_Europe).gb_63216.gif  "Micro machines")
 ![alt_text](gifs/Micro_Machines_(USA,_Europe).gb_124856.gif "Micro machines")
 ![alt_text](gifs/Micro_Machines_(USA,_Europe).gb_184680.gif "Micro machines")
