@@ -46,8 +46,12 @@ For example, running the command `python make_gifs.py --rom ./wario_walking.gb` 
 
 
 #### Alternatively, build a standalone gameboy with GLFW support and play games manually
-*. `make`
-*. `./gameboy {PATH_TO_ROM}`
+To build:
+``` make
+```
+To play:
+```./gameboy {PATH_TO_ROM}
+```
 
 ```
 enter - START
