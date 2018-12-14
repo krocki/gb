@@ -19,7 +19,7 @@ def get_frame(_frame): return np.frombuffer(_frame, dtype=np.uint8).reshape(144,
 def get_args():
     parser = argparse.ArgumentParser(description=None)
     parser.add_argument('--processes', default=1, type=int, help='number of processes to train with')
-    parser.add_argument('--framelimit', default=10000, type=int, help='frame limit')
+    parser.add_argument('--framelimit', default=1000000, type=int, help='frame limit')
     parser.add_argument('--skipframes', default=8, type=int, help='frame increment, def=1')
     parser.add_argument('--rom', default='./wario_walking.gb', type=str, help='path to rom')
     parser.add_argument('--write_gif_every', default=60, type=int, help='write to gif every n secs')
