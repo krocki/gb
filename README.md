@@ -61,5 +61,6 @@ space - SELECT
 Z     - A
 X     - B
 + arrows (left, right, down, up)
+SHIFT - turbo mode
 ```
 
