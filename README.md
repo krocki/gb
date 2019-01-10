@@ -1,5 +1,18 @@
 [Nintendo Learning Environment](http://olab.is.s.u-tokyo.ac.jp/~kamil.rocki/nintendo/)
-
+bibtex:
+```
+@misc{kamil_rocki_2019_2536648,
+  author       = {Kamil M Rocki},
+  title        = {Nintendo Learning Environment},
+  month        = jan,
+  year         = 2019,
+  publisher    = {GitHub},
+  journal      = {GitHub repository},
+  doi          = {10.5281/zenodo.2536648},
+  howpublished = {\url{https://github.com/krocki/gb}},
+  url          = {https://github.com/krocki/gb}
+}
+```
 [![DOI](https://zenodo.org/badge/155248798.svg)](https://zenodo.org/badge/latestdoi/155248798)
 
 # Quick start
