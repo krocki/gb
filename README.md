@@ -1,4 +1,10 @@
 [Nintendo Learning Environment](http://olab.is.s.u-tokyo.ac.jp/~kamil.rocki/nintendo/)
+http://olab.is.s.u-tokyo.ac.jp/~kamil.rocki/nintendo/
+
+* New environment for accelerating research in AI, targeting transfer and meta learning
+* Fastest game emulator in the world (CPU, GPU(coming soon) and FPGA versions), Support for over 1000 games in tot
+<img src="http://olab.is.s.u-tokyo.ac.jp/~kamil.rocki/research/mtetris.gif" width="500"/>
+
 bibtex:
 ```
 @misc{kamil_rocki_2019_2536648,
