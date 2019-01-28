@@ -3,7 +3,7 @@ http://olab.is.s.u-tokyo.ac.jp/~kamil.rocki/nintendo/
 
 * New environment for accelerating research in AI, targeting transfer and meta learning
 * Performance oriented ( high FPS for learning, efficient parallel execution )
-* GB emulator (CPU, GPU (coming soon) and FPGA versions), Support for over 1000 games in total
+* GB emulator (CPU, GPU), Support for over 1000 games in total
 * NES emulator (coming soon)
 
 <img src="http://olab.is.s.u-tokyo.ac.jp/~kamil.rocki/research/mtetris.gif" width="500"/>
