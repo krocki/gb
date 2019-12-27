@@ -13,6 +13,11 @@ None
 ## Python dependencies
 Numpy, CFFI
 
+# Fix for 'gameboy.so' not found:
+```
+export LD_LIBRARY_PATH=.
+```
+
 # Usage
 #### Use the provided python wrapper. Example:
 * Run the environment for 0.5M steps
